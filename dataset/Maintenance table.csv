@@ -1,0 +1,21 @@
+Maintenance_ID,Machine_ID,Maintenance_Date,Description,Technician_Name,Cost
+601,1,2026-02-01,"Routine Check","Technician A",2000
+602,2,2026-02-02,"Oil Change","Technician B",1500
+603,3,2026-02-03,"Sensor Repair","Technician C",2500
+604,4,2026-02-04,"Motor Issue","Technician D",3000
+605,5,2026-02-05,"Routine Check","Technician A",2000
+606,6,2026-02-06,"Pressure Valve Fix","Technician B",1800
+607,7,2026-02-07,"Cooling System Repair","Technician C",3500
+608,8,2026-02-08,"Routine Check","Technician D",2000
+609,9,2026-02-09,"Sensor Calibration","Technician A",2200
+610,10,2026-02-10,"Motor Replacement","Technician B",4000
+611,11,2026-02-11,"Routine Check","Technician C",2000
+612,12,2026-02-12,"Oil Leakage Fix","Technician D",1700
+613,13,2026-02-13,"Sensor Repair","Technician A",2600
+614,14,2026-02-14,"Routine Check","Technician B",2000
+615,15,2026-02-15,"Pressure Issue","Technician C",2800
+616,16,2026-02-16,"Motor Alignment","Technician D",2300
+617,17,2026-02-17,"Routine Check","Technician A",2000
+618,18,2026-02-18,"Cooling Repair","Technician B",3000
+619,19,2026-02-19,"Sensor Replacement","Technician C",3200
+620,20,2026-02-20,"Routine Check","Technician D",2000

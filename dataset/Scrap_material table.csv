@@ -1,0 +1,21 @@
+Scrap_ID,Scrap_Type,Weight,Source,Received_Date
+201,Iron,2000,"ABC Traders",2026-02-20
+202,Steel,1500,"XYZ Metals",2026-02-19
+203,Plastic,1200,"Green Corp",2026-02-18
+204,Iron,1800,"ABC Traders",2026-02-17
+205,Steel,1600,"XYZ Metals",2026-02-16
+206,Plastic,1100,"Green Corp",2026-02-15
+207,Iron,2100,"ABC Traders",2026-02-14
+208,Steel,1700,"XYZ Metals",2026-02-13
+209,Plastic,1300,"Green Corp",2026-02-12
+210,Iron,2200,"ABC Traders",2026-02-11
+211,Steel,1400,"XYZ Metals",2026-02-10
+212,Plastic,1250,"Green Corp",2026-02-09
+213,Iron,1950,"ABC Traders",2026-02-08
+214,Steel,1550,"XYZ Metals",2026-02-07
+215,Plastic,1350,"Green Corp",2026-02-06
+216,Iron,2050,"ABC Traders",2026-02-05
+217,Steel,1650,"XYZ Metals",2026-02-04
+218,Plastic,1400,"Green Corp",2026-02-03
+219,Iron,2150,"ABC Traders",2026-02-02
+220,Steel,1750,"XYZ Metals",2026-02-01

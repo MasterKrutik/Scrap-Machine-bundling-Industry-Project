@@ -1,0 +1,15 @@
+{
+  "name": "scrap-machine-email-service",
+  "version": "1.0.0",
+  "description": "Nodemailer email notification service for ScrapMachine IoT alerts",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^17.4.2",
+    "express": "^4.21.0",
+    "nodemailer": "^6.9.16"
+  }
+}

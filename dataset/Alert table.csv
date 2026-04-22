@@ -1,0 +1,21 @@
+Alert_ID,Machine_ID,Sensor_ID,Alert_Type,Alert_Time,Status
+701,1,101,Overheat,"2026-02-21 10:05:00",Resolved
+702,1,102,Overpressure,"2026-02-21 10:06:00",Resolved
+703,2,103,Overload,"2026-02-21 10:07:00",Pending
+704,2,104,Overheat,"2026-02-21 10:08:00",Resolved
+705,3,105,Overpressure,"2026-02-21 10:09:00",Pending
+706,3,106,Overload,"2026-02-21 10:10:00",Resolved
+707,4,107,Overheat,"2026-02-21 10:11:00",Resolved
+708,5,108,Overpressure,"2026-02-21 10:12:00",Pending
+709,6,109,Overload,"2026-02-21 10:13:00",Resolved
+710,7,110,Overheat,"2026-02-21 10:14:00",Resolved
+711,8,111,Overpressure,"2026-02-21 10:15:00",Pending
+712,9,112,Overload,"2026-02-21 10:16:00",Resolved
+713,10,113,Overheat,"2026-02-21 10:17:00",Resolved
+714,11,114,Overpressure,"2026-02-21 10:18:00",Pending
+715,12,115,Overload,"2026-02-21 10:19:00",Resolved
+716,13,116,Overheat,"2026-02-21 10:20:00",Resolved
+717,14,117,Overpressure,"2026-02-21 10:21:00",Pending
+718,15,118,Overload,"2026-02-21 10:22:00",Resolved
+719,16,119,Overheat,"2026-02-21 10:23:00",Resolved
+720,17,120,Overpressure,"2026-02-21 10:24:00",Pending

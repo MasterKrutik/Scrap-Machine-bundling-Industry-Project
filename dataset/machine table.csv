@@ -1,0 +1,21 @@
+Machine_ID,Machine_Name,Location,Installation_Date,Status,Capacity
+1,"Machine A","Plant 1",2023-01-01,Active,500
+2,"Machine B","Plant 1",2023-02-10,Active,450
+3,"Machine C","Plant 2",2023-03-15,Maintenance,600
+4,"Machine D","Plant 2",2023-04-20,Active,550
+5,"Machine E","Plant 3",2023-05-05,Active,520
+6,"Machine F","Plant 3",2023-06-18,Maintenance,480
+7,"Machine G","Plant 1",2023-07-25,Active,530
+8,"Machine H","Plant 2",2023-08-12,Active,510
+9,"Machine I","Plant 3",2023-09-01,Maintenance,470
+10,"Machine J","Plant 1",2023-10-10,Active,560
+11,"Machine K","Plant 2",2023-11-11,Active,600
+12,"Machine L","Plant 3",2023-12-01,Maintenance,490
+13,"Machine M","Plant 1",2024-01-05,Active,580
+14,"Machine N","Plant 2",2024-02-15,Active,610
+15,"Machine O","Plant 3",2024-03-20,Maintenance,495
+16,"Machine P","Plant 1",2024-04-10,Active,540
+17,"Machine Q","Plant 2",2024-05-22,Active,570
+18,"Machine R","Plant 3",2024-06-18,Active,520
+19,"Machine S","Plant 1",2024-07-09,Maintenance,500
+20,"Machine T","Plant 2",2024-08-30,Active,630
