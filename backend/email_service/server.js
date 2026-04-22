@@ -28,7 +28,7 @@ require('dotenv').config();
 
 let transporter = null;
 let emailConfig = {
-  alertRecipients: ["yoyokingguys143@gmail.com"],
+  alertRecipients: ["yoyokingguys1143@gmail.com"],
   fromAddress: "yoyokingguys143@gmail.com",
   fromName: "ScrapMachine IoT Alerts",
 };

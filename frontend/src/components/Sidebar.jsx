@@ -21,7 +21,6 @@ export default function Sidebar({ activeTab, setActiveTab, alertCount }) {
     { id: "production", icon: "📦", label: "Production" },
     { id: "faults", icon: "⚠️", label: "Report Fault" },
     { id: "maintenance", icon: "🔧", label: "Maintenance" },
-    { id: "alerts", icon: "🔔", label: "Alerts", badge: alertCount },
   ];
 
   const links = isAdmin ? adminLinks : userLinks;

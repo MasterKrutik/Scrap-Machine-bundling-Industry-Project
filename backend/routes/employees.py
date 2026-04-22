@@ -1,10 +1,11 @@
 """
-Employee routes - CRUD operations.
+Employee (Operator) routes - CRUD operations.
 """
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt
 from models.database import execute_query
+import uuid
 
 employees_bp = Blueprint("employees", __name__)
 
@@ -12,17 +13,17 @@ employees_bp = Blueprint("employees", __name__)
 @employees_bp.route("/api/employees", methods=["GET"])
 @jwt_required()
 def get_employees():
-    employees = execute_query("SELECT * FROM employees ORDER BY employee_id")
-    return jsonify(employees)
+    operators = execute_query("SELECT * FROM operators ORDER BY Operator_ID")
+    return jsonify(operators)
 
 
-@employees_bp.route("/api/employees/<int:employee_id>", methods=["GET"])
+@employees_bp.route("/api/employees/<operator_id>", methods=["GET"])
 @jwt_required()
-def get_employee(employee_id):
-    employees = execute_query("SELECT * FROM employees WHERE employee_id = %s", (employee_id,))
-    if not employees:
-        return jsonify({"error": "Employee not found"}), 404
-    return jsonify(employees[0])
+def get_employee(operator_id):
+    operators = execute_query("SELECT * FROM operators WHERE Operator_ID = %s", (operator_id,))
+    if not operators:
+        return jsonify({"error": "Operator not found"}), 404
+    return jsonify(operators[0])
 
 
 @employees_bp.route("/api/employees", methods=["POST"])
@@ -33,24 +34,24 @@ def create_employee():
         return jsonify({"error": "Admin access required"}), 403
 
     data = request.get_json()
-    required = ["first_name", "last_name", "role", "department", "shift", "phone", "hire_date"]
+    required = ["Name", "Shift", "Contact", "Experience_Years"]
     for field in required:
         if field not in data:
             return jsonify({"error": f"Missing field: {field}"}), 400
 
-    emp_id = execute_query(
-        """INSERT INTO employees (first_name, last_name, role, department, shift, phone, hire_date)
-           VALUES (%s, %s, %s, %s, %s, %s, %s)""",
-        (data["first_name"], data["last_name"], data["role"], data["department"],
-         data["shift"], data["phone"], data["hire_date"]),
+    operator_id = data.get("Operator_ID", f"OP-{str(uuid.uuid4())[:6].upper()}")
+    execute_query(
+        """INSERT INTO operators (Operator_ID, Name, Shift, Contact, Experience_Years)
+           VALUES (%s, %s, %s, %s, %s)""",
+        (operator_id, data["Name"], data["Shift"], data["Contact"], data["Experience_Years"]),
         fetch=False
     )
-    return jsonify({"message": "Employee created", "employee_id": emp_id}), 201
+    return jsonify({"message": "Operator created", "Operator_ID": operator_id}), 201
 
 
-@employees_bp.route("/api/employees/<int:employee_id>", methods=["PUT"])
+@employees_bp.route("/api/employees/<operator_id>", methods=["PUT"])
 @jwt_required()
-def update_employee(employee_id):
+def update_employee(operator_id):
     claims = get_jwt()
     if claims.get("role") != "Admin":
         return jsonify({"error": "Admin access required"}), 403
@@ -58,7 +59,7 @@ def update_employee(employee_id):
     data = request.get_json()
     fields = []
     values = []
-    for key in ["first_name", "last_name", "role", "department", "shift", "phone"]:
+    for key in ["Name", "Shift", "Contact", "Experience_Years"]:
         if key in data:
             fields.append(f"{key} = %s")
             values.append(data[key])
@@ -66,21 +67,21 @@ def update_employee(employee_id):
     if not fields:
         return jsonify({"error": "No fields to update"}), 400
 
-    values.append(employee_id)
+    values.append(operator_id)
     execute_query(
-        f"UPDATE employees SET {', '.join(fields)} WHERE employee_id = %s",
+        f"UPDATE operators SET {', '.join(fields)} WHERE Operator_ID = %s",
         tuple(values),
         fetch=False
     )
-    return jsonify({"message": "Employee updated"})
+    return jsonify({"message": "Operator updated"})
 
 
-@employees_bp.route("/api/employees/<int:employee_id>", methods=["DELETE"])
+@employees_bp.route("/api/employees/<operator_id>", methods=["DELETE"])
 @jwt_required()
-def delete_employee(employee_id):
+def delete_employee(operator_id):
     claims = get_jwt()
     if claims.get("role") != "Admin":
         return jsonify({"error": "Admin access required"}), 403
 
-    execute_query("DELETE FROM employees WHERE employee_id = %s", (employee_id,), fetch=False)
-    return jsonify({"message": "Employee deleted"})
+    execute_query("DELETE FROM operators WHERE Operator_ID = %s", (operator_id,), fetch=False)
+    return jsonify({"message": "Operator deleted"})

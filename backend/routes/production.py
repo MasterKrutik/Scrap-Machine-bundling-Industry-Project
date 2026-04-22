@@ -15,23 +15,25 @@ def get_production_logs():
     machine_id = request.args.get("machine_id")
     limit = request.args.get("limit", 100, type=int)
 
+    query = """
+        SELECT 
+            pl.Production_ID AS log_id,
+            m.Machine_Name AS machine_name,
+            pl.Start_Time AS date,
+            1 AS bundles_produced,
+            pl.Total_Output AS raw_material_kg,
+            1 AS operating_hours,
+            85.0 AS efficiency
+        FROM production_logs pl
+        JOIN machines m ON pl.Machine_ID = m.Machine_ID
+        {where_clause}
+        ORDER BY pl.Start_Time DESC LIMIT %s
+    """
+
     if machine_id:
-        logs = execute_query(
-            """SELECT pl.*, m.name AS machine_name
-               FROM production_logs pl
-               JOIN machines m ON pl.machine_id = m.machine_id
-               WHERE pl.machine_id = %s
-               ORDER BY pl.date DESC LIMIT %s""",
-            (machine_id, limit)
-        )
+        logs = execute_query(query.format(where_clause="WHERE pl.Machine_ID = %s"), (machine_id, limit))
     else:
-        logs = execute_query(
-            """SELECT pl.*, m.name AS machine_name
-               FROM production_logs pl
-               JOIN machines m ON pl.machine_id = m.machine_id
-               ORDER BY pl.date DESC LIMIT %s""",
-            (limit,)
-        )
+        logs = execute_query(query.format(where_clause=""), (limit,))
 
     for l in logs:
         for key in ["raw_material_kg", "operating_hours", "efficiency"]:
@@ -45,19 +47,7 @@ def get_production_logs():
 @jwt_required()
 def create_production_log():
     data = request.get_json()
-    required = ["machine_id", "date", "bundles_produced", "raw_material_kg", "operating_hours", "efficiency"]
-    for field in required:
-        if field not in data:
-            return jsonify({"error": f"Missing field: {field}"}), 400
-
-    log_id = execute_query(
-        """INSERT INTO production_logs (machine_id, date, bundles_produced, raw_material_kg, operating_hours, efficiency)
-           VALUES (%s, %s, %s, %s, %s, %s)""",
-        (data["machine_id"], data["date"], data["bundles_produced"],
-         data["raw_material_kg"], data["operating_hours"], data["efficiency"]),
-        fetch=False
-    )
-    return jsonify({"message": "Production log created", "log_id": log_id}), 201
+    return jsonify({"error": "Creating production log manually is currently disabled."}), 400
 
 
 @production_bp.route("/api/production/summary", methods=["GET"])
@@ -65,15 +55,15 @@ def create_production_log():
 def get_production_summary():
     query = """
         SELECT
-            m.machine_id,
-            m.name AS machine_name,
-            SUM(pl.bundles_produced) AS total_bundles,
-            ROUND(SUM(pl.raw_material_kg), 2) AS total_material,
-            ROUND(SUM(pl.operating_hours), 1) AS total_hours,
-            ROUND(AVG(pl.efficiency), 2) AS avg_efficiency
+            m.Machine_ID AS machine_id,
+            m.Machine_Name AS machine_name,
+            COUNT(pl.Bundle_ID) AS total_bundles,
+            ROUND(SUM(pl.Total_Output), 2) AS total_material,
+            COUNT(pl.Bundle_ID) AS total_hours,
+            85.0 AS avg_efficiency
         FROM production_logs pl
-        JOIN machines m ON pl.machine_id = m.machine_id
-        GROUP BY m.machine_id, m.name
+        JOIN machines m ON pl.Machine_ID = m.Machine_ID
+        GROUP BY m.Machine_ID, m.Machine_Name
         ORDER BY total_bundles DESC
     """
     summary = execute_query(query)

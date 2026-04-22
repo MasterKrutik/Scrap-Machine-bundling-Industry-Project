@@ -91,107 +91,99 @@ def init_sqlite_db():
 
     cursor.executescript("""
         CREATE TABLE IF NOT EXISTS machines (
-            machine_id      INTEGER PRIMARY KEY AUTOINCREMENT,
-            name            TEXT NOT NULL UNIQUE,
-            type            TEXT NOT NULL,
-            location        TEXT NOT NULL,
-            install_date    TEXT NOT NULL,
-            status          TEXT NOT NULL DEFAULT 'Idle'
-                            CHECK (status IN ('Running', 'Idle', 'Maintenance', 'Fault')),
-            max_capacity_tons REAL NOT NULL CHECK (max_capacity_tons > 0)
+            Machine_ID TEXT PRIMARY KEY,
+            Machine_Name TEXT,
+            Location TEXT,
+            Installation_Date TEXT,
+            Status TEXT,
+            Capacity TEXT
         );
 
-        CREATE TABLE IF NOT EXISTS employees (
-            employee_id     INTEGER PRIMARY KEY AUTOINCREMENT,
-            first_name      TEXT NOT NULL,
-            last_name       TEXT NOT NULL,
-            role            TEXT NOT NULL,
-            department      TEXT NOT NULL,
-            shift           TEXT NOT NULL CHECK (shift IN ('Morning', 'Afternoon', 'Night')),
-            phone           TEXT NOT NULL,
-            hire_date       TEXT NOT NULL
+        CREATE TABLE IF NOT EXISTS operators (
+            Operator_ID TEXT PRIMARY KEY,
+            Name TEXT,
+            Shift TEXT,
+            Contact TEXT,
+            Experience_Years TEXT
         );
 
         CREATE TABLE IF NOT EXISTS users (
-            user_id         INTEGER PRIMARY KEY AUTOINCREMENT,
-            username        TEXT NOT NULL UNIQUE,
-            password_hash   TEXT NOT NULL,
-            role            TEXT NOT NULL DEFAULT 'User' CHECK (role IN ('Admin', 'User')),
-            employee_id     INTEGER NOT NULL,
-            FOREIGN KEY (employee_id) REFERENCES employees(employee_id)
-        );
-
-        CREATE TABLE IF NOT EXISTS sensor_readings (
-            reading_id      INTEGER PRIMARY KEY AUTOINCREMENT,
-            machine_id      INTEGER NOT NULL,
-            timestamp       TEXT NOT NULL,
-            temperature     REAL NOT NULL CHECK (temperature >= 0),
-            vibration       REAL NOT NULL CHECK (vibration >= 0),
-            pressure        REAL NOT NULL CHECK (pressure >= 0),
-            motor_current   REAL NOT NULL CHECK (motor_current >= 0),
-            oil_level       REAL NOT NULL CHECK (oil_level >= 0 AND oil_level <= 100),
-            bundle_weight   REAL NOT NULL DEFAULT 0 CHECK (bundle_weight >= 0),
-            proximity       INTEGER NOT NULL DEFAULT 0 CHECK (proximity IN (0, 1)),
-            FOREIGN KEY (machine_id) REFERENCES machines(machine_id)
-        );
-
-        CREATE TABLE IF NOT EXISTS production_logs (
-            log_id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            machine_id      INTEGER NOT NULL,
-            date            TEXT NOT NULL,
-            bundles_produced INTEGER NOT NULL CHECK (bundles_produced >= 0),
-            raw_material_kg REAL NOT NULL CHECK (raw_material_kg >= 0),
-            operating_hours REAL NOT NULL CHECK (operating_hours >= 0 AND operating_hours <= 24),
-            efficiency      REAL NOT NULL CHECK (efficiency >= 0 AND efficiency <= 100),
-            FOREIGN KEY (machine_id) REFERENCES machines(machine_id)
-        );
-
-        CREATE TABLE IF NOT EXISTS fault_logs (
-            fault_id        INTEGER PRIMARY KEY AUTOINCREMENT,
-            machine_id      INTEGER NOT NULL,
-            reported_by     INTEGER NOT NULL,
-            timestamp       TEXT NOT NULL,
-            fault_type      TEXT NOT NULL,
-            severity        TEXT NOT NULL CHECK (severity IN ('Low', 'Medium', 'High')),
-            description     TEXT,
-            resolved        INTEGER NOT NULL DEFAULT 0 CHECK (resolved IN (0, 1)),
-            FOREIGN KEY (machine_id) REFERENCES machines(machine_id),
-            FOREIGN KEY (reported_by) REFERENCES employees(employee_id)
+            user_id INTEGER PRIMARY KEY AUTOINCREMENT,
+            username TEXT UNIQUE,
+            password_hash TEXT,
+            role TEXT,
+            Operator_ID TEXT,
+            FOREIGN KEY (Operator_ID) REFERENCES operators(Operator_ID)
         );
 
         CREATE TABLE IF NOT EXISTS maintenance_logs (
-            maintenance_id  INTEGER PRIMARY KEY AUTOINCREMENT,
-            machine_id      INTEGER NOT NULL,
-            performed_by    INTEGER NOT NULL,
-            date            TEXT NOT NULL,
-            type            TEXT NOT NULL CHECK (type IN ('Preventive', 'Corrective', 'Predictive', 'Emergency')),
-            duration_hours  REAL NOT NULL CHECK (duration_hours > 0),
-            description     TEXT,
-            parts_replaced  TEXT,
-            FOREIGN KEY (machine_id) REFERENCES machines(machine_id),
-            FOREIGN KEY (performed_by) REFERENCES employees(employee_id)
+            Maintenance_ID TEXT PRIMARY KEY,
+            Machine_ID TEXT,
+            Maintenance_Date TEXT,
+            Description TEXT,
+            Technician_Name TEXT,
+            Cost TEXT,
+            FOREIGN KEY (Machine_ID) REFERENCES machines(Machine_ID)
+        );
+
+        CREATE TABLE IF NOT EXISTS sensors (
+            Sensor_ID TEXT PRIMARY KEY,
+            Sensor_Type TEXT,
+            Unit TEXT,
+            Machine_ID TEXT,
+            FOREIGN KEY (Machine_ID) REFERENCES machines(Machine_ID)
+        );
+
+        CREATE TABLE IF NOT EXISTS sensor_data (
+            Data_ID TEXT PRIMARY KEY,
+            Sensor_ID TEXT,
+            Timestamp TEXT,
+            Value REAL,
+            FOREIGN KEY (Sensor_ID) REFERENCES sensors(Sensor_ID)
         );
 
         CREATE TABLE IF NOT EXISTS alerts (
-            alert_id        INTEGER PRIMARY KEY AUTOINCREMENT,
-            fault_id        INTEGER,
-            machine_id      INTEGER NOT NULL,
-            timestamp       TEXT NOT NULL DEFAULT (datetime('now')),
-            severity        TEXT NOT NULL CHECK (severity IN ('Low', 'Medium', 'High')),
-            message         TEXT NOT NULL,
-            acknowledged    INTEGER NOT NULL DEFAULT 0 CHECK (acknowledged IN (0, 1)),
-            FOREIGN KEY (fault_id) REFERENCES fault_logs(fault_id),
-            FOREIGN KEY (machine_id) REFERENCES machines(machine_id)
+            Alert_ID TEXT PRIMARY KEY,
+            Machine_ID TEXT,
+            Sensor_ID TEXT,
+            Alert_Type TEXT,
+            Alert_Time TEXT,
+            Status TEXT,
+            FOREIGN KEY (Machine_ID) REFERENCES machines(Machine_ID),
+            FOREIGN KEY (Sensor_ID) REFERENCES sensors(Sensor_ID)
         );
 
-        CREATE INDEX IF NOT EXISTS idx_sensor_machine_ts ON sensor_readings(machine_id, timestamp);
-        CREATE INDEX IF NOT EXISTS idx_sensor_timestamp ON sensor_readings(timestamp);
-        CREATE INDEX IF NOT EXISTS idx_production_machine_date ON production_logs(machine_id, date);
-        CREATE INDEX IF NOT EXISTS idx_fault_machine ON fault_logs(machine_id);
-        CREATE INDEX IF NOT EXISTS idx_fault_severity ON fault_logs(severity);
-        CREATE INDEX IF NOT EXISTS idx_maintenance_machine ON maintenance_logs(machine_id);
-        CREATE INDEX IF NOT EXISTS idx_alerts_acknowledged ON alerts(acknowledged);
-        CREATE INDEX IF NOT EXISTS idx_alerts_timestamp ON alerts(timestamp);
+        CREATE TABLE IF NOT EXISTS scrap_materials (
+            Scrap_ID TEXT PRIMARY KEY,
+            Scrap_Type TEXT,
+            Weight REAL,
+            Source TEXT,
+            Received_Date TEXT
+        );
+
+        CREATE TABLE IF NOT EXISTS bundles (
+            Bundle_ID TEXT PRIMARY KEY,
+            Machine_ID TEXT,
+            Scrap_ID TEXT,
+            Bundle_Weight REAL,
+            Production_Time TEXT,
+            Quality_Status TEXT,
+            FOREIGN KEY (Machine_ID) REFERENCES machines(Machine_ID),
+            FOREIGN KEY (Scrap_ID) REFERENCES scrap_materials(Scrap_ID)
+        );
+
+        CREATE TABLE IF NOT EXISTS production_logs (
+            Production_ID TEXT PRIMARY KEY,
+            Machine_ID TEXT,
+            Operator_ID TEXT,
+            Bundle_ID TEXT,
+            Start_Time TEXT,
+            End_Time TEXT,
+            Total_Output REAL,
+            FOREIGN KEY (Machine_ID) REFERENCES machines(Machine_ID),
+            FOREIGN KEY (Operator_ID) REFERENCES operators(Operator_ID),
+            FOREIGN KEY (Bundle_ID) REFERENCES bundles(Bundle_ID)
+        );
     """)
 
     conn.commit()
@@ -203,78 +195,107 @@ def init_sqlite_db():
 def seed_sqlite_db():
     """Seed SQLite database from CSV files."""
     import csv
+    from werkzeug.security import generate_password_hash
 
     dataset_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "..", "dataset")
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
 
     def read_csv(filename):
-        with open(os.path.join(dataset_dir, filename), "r") as f:
+        with open(os.path.join(dataset_dir, filename), "r", encoding="utf-8-sig") as f:
             return list(csv.DictReader(f))
 
     # Machines
-    for r in read_csv("machines.csv"):
-        cursor.execute(
-            "INSERT OR IGNORE INTO machines VALUES (?,?,?,?,?,?,?)",
-            (r["machine_id"], r["name"], r["type"], r["location"],
-             r["install_date"], r["status"], r["max_capacity_tons"])
-        )
+    try:
+        for r in read_csv("machine table.csv"):
+            cursor.execute(
+                "INSERT OR IGNORE INTO machines VALUES (?,?,?,?,?,?)",
+                (r.get("Machine_ID"), r.get("Machine_Name"), r.get("Location"), 
+                 r.get("Installation_Date"), r.get("Status"), r.get("Capacity"))
+            )
+    except FileNotFoundError: pass
 
-    # Employees
-    for r in read_csv("employees.csv"):
-        cursor.execute(
-            "INSERT OR IGNORE INTO employees VALUES (?,?,?,?,?,?,?,?)",
-            (r["employee_id"], r["first_name"], r["last_name"], r["role"],
-             r["department"], r["shift"], r["phone"], r["hire_date"])
-        )
+    # Operators
+    try:
+        operator_ids = []
+        for r in read_csv("Operator table.csv"):
+            operator_ids.append(r.get("Operator_ID"))
+            cursor.execute(
+                "INSERT OR IGNORE INTO operators VALUES (?,?,?,?,?)",
+                (r.get("Operator_ID"), r.get("Name"), r.get("Shift"), r.get("Contact"), r.get("Experience_Years"))
+            )
+        
+        # Create a default Admin User linked to the first operator
+        if operator_ids:
+            cursor.execute("SELECT COUNT(*) FROM users WHERE username='admin'")
+            if cursor.fetchone()[0] == 0:
+                pwd_hash = generate_password_hash("password")
+                cursor.execute(
+                    "INSERT INTO users (username, password_hash, role, Operator_ID) VALUES (?,?,?,?)",
+                    ("admin", pwd_hash, "Admin", operator_ids[0])
+                )
+    except FileNotFoundError: pass
 
-    # Users
-    for r in read_csv("users.csv"):
-        cursor.execute(
-            "INSERT OR IGNORE INTO users VALUES (?,?,?,?,?)",
-            (r["user_id"], r["username"], r["password_hash"], r["role"], r["employee_id"])
-        )
+    # Scrap Materials
+    try:
+        for r in read_csv("Scrap_material table.csv"):
+            cursor.execute(
+                "INSERT OR IGNORE INTO scrap_materials VALUES (?,?,?,?,?)",
+                (r.get("Scrap_ID"), r.get("Scrap_Type"), r.get("Weight"), r.get("Source"), r.get("Received_Date"))
+            )
+    except FileNotFoundError: pass
 
-    # Production logs
-    for r in read_csv("production_logs.csv"):
-        cursor.execute(
-            "INSERT OR IGNORE INTO production_logs VALUES (?,?,?,?,?,?,?)",
-            (r["log_id"], r["machine_id"], r["date"], r["bundles_produced"],
-             r["raw_material_kg"], r["operating_hours"], r["efficiency"])
-        )
+    # Sensors
+    try:
+        for r in read_csv("Sensor table.csv"):
+            cursor.execute(
+                "INSERT OR IGNORE INTO sensors VALUES (?,?,?,?)",
+                (r.get("Sensor_ID"), r.get("Sensor_Type"), r.get("Unit"), r.get("Machine_ID"))
+            )
+    except FileNotFoundError: pass
 
-    # Fault logs
-    for r in read_csv("fault_logs.csv"):
-        cursor.execute(
-            "INSERT OR IGNORE INTO fault_logs VALUES (?,?,?,?,?,?,?,?)",
-            (r["fault_id"], r["machine_id"], r["reported_by"], r["timestamp"],
-             r["fault_type"], r["severity"], r["description"], r["resolved"])
-        )
-
-    # Maintenance logs
-    for r in read_csv("maintenance_logs.csv"):
-        cursor.execute(
-            "INSERT OR IGNORE INTO maintenance_logs VALUES (?,?,?,?,?,?,?,?)",
-            (r["maintenance_id"], r["machine_id"], r["performed_by"], r["date"],
-             r["type"], r["duration_hours"], r["description"], r["parts_replaced"])
-        )
+    # Sensor Data
+    try:
+        rows = read_csv("Sensordata table.csv")
+        batch = [(r.get("Data_ID"), r.get("Sensor_ID"), r.get("Timestamp"), r.get("Value")) for r in rows]
+        cursor.executemany("INSERT OR IGNORE INTO sensor_data VALUES (?,?,?,?)", batch)
+    except FileNotFoundError: pass
 
     # Alerts
-    for r in read_csv("alerts.csv"):
-        cursor.execute(
-            "INSERT OR IGNORE INTO alerts VALUES (?,?,?,?,?,?,?)",
-            (r["alert_id"], r["fault_id"], r["machine_id"], r["timestamp"],
-             r["severity"], r["message"], r["acknowledged"])
-        )
+    try:
+        for r in read_csv("Alert table.csv"):
+            cursor.execute(
+                "INSERT OR IGNORE INTO alerts VALUES (?,?,?,?,?,?)",
+                (r.get("Alert_ID"), r.get("Machine_ID"), r.get("Sensor_ID"), r.get("Alert_Type"), r.get("Alert_Time"), r.get("Status"))
+            )
+    except FileNotFoundError: pass
 
-    # Sensor readings (bulk)
-    rows = read_csv("sensor_readings.csv")
-    batch = [(r["reading_id"], r["machine_id"], r["timestamp"], r["temperature"],
-              r["vibration"], r["pressure"], r["motor_current"], r["oil_level"],
-              r["bundle_weight"], r["proximity"]) for r in rows]
-    cursor.executemany(
-        "INSERT OR IGNORE INTO sensor_readings VALUES (?,?,?,?,?,?,?,?,?,?)", batch
-    )
+    # Bundles
+    try:
+        for r in read_csv("Bundle table.csv"):
+            cursor.execute(
+                "INSERT OR IGNORE INTO bundles VALUES (?,?,?,?,?,?)",
+                (r.get("Bundle_ID"), r.get("Machine_ID"), r.get("Scrap_ID"), r.get("Bundle_Weight"), r.get("Production_Time"), r.get("Quality_Status"))
+            )
+    except FileNotFoundError: pass
+
+    # Production Logs
+    try:
+        for r in read_csv("Production table.csv"):
+            cursor.execute(
+                "INSERT OR IGNORE INTO production_logs VALUES (?,?,?,?,?,?,?)",
+                (r.get("Production_ID"), r.get("Machine_ID"), r.get("Operator_ID"), r.get("Bundle_ID"), r.get("Start_Time"), r.get("End_Time"), r.get("Total_Output"))
+            )
+    except FileNotFoundError: pass
+
+    # Maintenance Logs
+    try:
+        for r in read_csv("Maintenance table.csv"):
+            cursor.execute(
+                "INSERT OR IGNORE INTO maintenance_logs VALUES (?,?,?,?,?,?)",
+                (r.get("Maintenance_ID"), r.get("Machine_ID"), r.get("Maintenance_Date"), r.get("Description"), r.get("Technician_Name"), r.get("Cost"))
+            )
+    except FileNotFoundError: pass
 
     conn.commit()
     cursor.close()

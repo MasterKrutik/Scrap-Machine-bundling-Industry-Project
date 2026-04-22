@@ -4,14 +4,10 @@ Auth routes - Login with JWT, role-based (Admin / User).
 
 from flask import Blueprint, request, jsonify
 from flask_jwt_extended import create_access_token
-import hashlib
+from werkzeug.security import check_password_hash, generate_password_hash
 from models.database import execute_query
 
 auth_bp = Blueprint("auth", __name__)
-
-
-def hash_pw(pw):
-    return hashlib.sha256(pw.encode()).hexdigest()
 
 
 @auth_bp.route("/api/auth/login", methods=["POST"])
@@ -24,8 +20,8 @@ def login():
         return jsonify({"error": "Username and password required"}), 400
 
     users = execute_query(
-        "SELECT u.*, (e.first_name || ' ' || e.last_name) AS full_name "
-        "FROM users u JOIN employees e ON u.employee_id = e.employee_id "
+        "SELECT u.*, o.Name AS full_name "
+        "FROM users u LEFT JOIN operators o ON u.Operator_ID = o.Operator_ID "
         "WHERE u.username = %s",
         (username,)
     )
@@ -34,7 +30,16 @@ def login():
         return jsonify({"error": "Invalid credentials"}), 401
 
     user = users[0]
-    if user["password_hash"] != hash_pw(password):
+    
+    # Backward compatibility: check if it's werkzeug hash (scrypt/pbkdf2) or sha256
+    import hashlib
+    is_valid = False
+    if user["password_hash"].startswith("scrypt:") or user["password_hash"].startswith("pbkdf2:"):
+        is_valid = check_password_hash(user["password_hash"], password)
+    else:
+        is_valid = user["password_hash"] == hashlib.sha256(password.encode()).hexdigest()
+
+    if not is_valid:
         return jsonify({"error": "Invalid credentials"}), 401
 
     access_token = create_access_token(
@@ -42,8 +47,8 @@ def login():
         additional_claims={
             "role": user["role"],
             "username": user["username"],
-            "full_name": user["full_name"],
-            "employee_id": user["employee_id"]
+            "full_name": user["full_name"] or "Admin",
+            "employee_id": user["Operator_ID"]
         }
     )
 
@@ -53,8 +58,8 @@ def login():
             "user_id": user["user_id"],
             "username": user["username"],
             "role": user["role"],
-            "full_name": user["full_name"],
-            "employee_id": user["employee_id"]
+            "full_name": user["full_name"] or "Admin",
+            "employee_id": user["Operator_ID"]
         }
     }), 200
 
@@ -72,3 +77,4 @@ def get_me():
             "full_name": claims["full_name"]
         })
     return inner()
+

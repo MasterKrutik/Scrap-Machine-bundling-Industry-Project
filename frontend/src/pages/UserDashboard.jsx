@@ -113,10 +113,9 @@ export default function UserDashboard({ activeTab, alertCount, setAlertCount }) 
             <div className="card-header"><h3 className="card-title">Machine Status</h3></div>
             <DataTable
               columns={[
-                { key: "name", label: "Name" },
-                { key: "type", label: "Type" },
-                { key: "location", label: "Location" },
-                { key: "status", label: "Status", render: (v) => {
+                { key: "Machine_Name", label: "Name" },
+                { key: "Location", label: "Location" },
+                { key: "Status", label: "Status", render: (v) => {
                   const cls = v === "Running" ? "badge-green" : v === "Fault" ? "badge-red" : v === "Maintenance" ? "badge-amber" : "badge-blue";
                   return <span className={`badge ${cls}`}>{v}</span>;
                 }},
@@ -244,30 +243,7 @@ export default function UserDashboard({ activeTab, alertCount, setAlertCount }) 
         </>
       )}
 
-      {/* ── ALERTS ── */}
-      {activeTab === "alerts" && (
-        <>
-          <div className="page-header">
-            <div><h1>🔔 Alert Messages</h1><p className="page-subtitle">In-app notifications</p></div>
-          </div>
-          <div className="card">
-            <DataTable
-              columns={[
-                { key: "alert_id", label: "ID" },
-                { key: "machine_name", label: "Machine" },
-                { key: "severity", label: "Severity", render: severityBadge },
-                { key: "message", label: "Message" },
-                { key: "timestamp", label: "Time" },
-                { key: "acknowledged", label: "Status", render: (v) => v ? <span className="badge badge-green">Noted</span> : <span className="badge badge-red">New</span> },
-                { key: "alert_id", label: "Action", render: (_, row) => !row.acknowledged && (
-                  <button className="btn btn-primary btn-sm" onClick={() => handleAcknowledge(row.alert_id)}>Acknowledge</button>
-                )},
-              ]}
-              data={alerts}
-            />
-          </div>
-        </>
-      )}
+
 
       {/* ── REPORT FAULT MODAL ── */}
       {showModal === "report-fault" && (
@@ -279,7 +255,7 @@ export default function UserDashboard({ activeTab, alertCount, setAlertCount }) 
                 <label>Machine</label>
                 <select className="input" onChange={e => setFormData({...formData, machine_id: parseInt(e.target.value)})}>
                   <option value="">Select machine</option>
-                  {machines.map(m => <option key={m.machine_id} value={m.machine_id}>{m.name}</option>)}
+                  {machines.map(m => <option key={m.Machine_ID} value={m.Machine_ID}>{m.Machine_Name}</option>)}
                 </select>
               </div>
               <div className="input-group">
@@ -322,7 +298,7 @@ export default function UserDashboard({ activeTab, alertCount, setAlertCount }) 
                 <label>Machine</label>
                 <select className="input" onChange={e => setFormData({...formData, machine_id: parseInt(e.target.value)})}>
                   <option value="">Select machine</option>
-                  {machines.map(m => <option key={m.machine_id} value={m.machine_id}>{m.name}</option>)}
+                  {machines.map(m => <option key={m.Machine_ID} value={m.Machine_ID}>{m.Machine_Name}</option>)}
                 </select>
               </div>
               <div className="input-group">

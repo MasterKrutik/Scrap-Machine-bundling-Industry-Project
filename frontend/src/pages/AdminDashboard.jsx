@@ -163,7 +163,7 @@ export default function AdminDashboard({ activeTab, alertCount, setAlertCount })
               <div className="card-header"><h3 className="card-title">Machine Status</h3></div>
               <StatusPieChart data={(() => {
                 const counts = {};
-                machines.forEach(m => { counts[m.status] = (counts[m.status] || 0) + 1; });
+                machines.forEach(m => { counts[m.Status] = (counts[m.Status] || 0) + 1; });
                 const colorMap = { Running: "#10b981", Idle: "#3b82f6", Maintenance: "#f59e0b", Fault: "#ef4444" };
                 return Object.entries(counts).map(([name, value]) => ({ name, value, color: colorMap[name] }));
               })()} />
@@ -172,10 +172,9 @@ export default function AdminDashboard({ activeTab, alertCount, setAlertCount })
               <div className="card-header"><h3 className="card-title">Machines Overview</h3></div>
               <DataTable
                 columns={[
-                  { key: "name", label: "Name" },
-                  { key: "type", label: "Type" },
-                  { key: "location", label: "Location" },
-                  { key: "status", label: "Status", render: statusBadge },
+                  { key: "Machine_Name", label: "Name" },
+                  { key: "Location", label: "Location" },
+                  { key: "Status", label: "Status", render: statusBadge },
                 ]}
                 data={machines}
               />
@@ -194,15 +193,14 @@ export default function AdminDashboard({ activeTab, alertCount, setAlertCount })
           <div className="card">
             <DataTable
               columns={[
-                { key: "machine_id", label: "ID" },
-                { key: "name", label: "Name" },
-                { key: "type", label: "Type" },
-                { key: "location", label: "Location" },
-                { key: "install_date", label: "Install Date" },
-                { key: "status", label: "Status", render: statusBadge },
-                { key: "max_capacity_tons", label: "Capacity (T)", render: (v) => `${v} T` },
-                { key: "machine_id", label: "Actions", render: (_, row) => (
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete("machine", row.machine_id)}>Delete</button>
+                { key: "Machine_ID", label: "ID" },
+                { key: "Machine_Name", label: "Name" },
+                { key: "Location", label: "Location" },
+                { key: "Installation_Date", label: "Install Date" },
+                { key: "Status", label: "Status", render: statusBadge },
+                { key: "Capacity", label: "Capacity", render: (v) => `${v}` },
+                { key: "Machine_ID", label: "Actions", render: (_, row) => (
+                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete("machine", row.Machine_ID)}>Delete</button>
                 )},
               ]}
               data={machines}
@@ -221,15 +219,13 @@ export default function AdminDashboard({ activeTab, alertCount, setAlertCount })
           <div className="card">
             <DataTable
               columns={[
-                { key: "employee_id", label: "ID" },
-                { key: "first_name", label: "First Name" },
-                { key: "last_name", label: "Last Name" },
-                { key: "role", label: "Role" },
-                { key: "department", label: "Department" },
-                { key: "shift", label: "Shift" },
-                { key: "phone", label: "Phone" },
-                { key: "employee_id", label: "Actions", render: (_, row) => (
-                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete("employee", row.employee_id)}>Delete</button>
+                { key: "Operator_ID", label: "ID" },
+                { key: "Name", label: "Name" },
+                { key: "Shift", label: "Shift" },
+                { key: "Contact", label: "Phone" },
+                { key: "Experience_Years", label: "Experience" },
+                { key: "Operator_ID", label: "Actions", render: (_, row) => (
+                  <button className="btn btn-danger btn-sm" onClick={() => handleDelete("employee", row.Operator_ID)}>Delete</button>
                 )},
               ]}
               data={employees}
