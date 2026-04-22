@@ -174,31 +174,31 @@ def get_dashboard_stats():
     stats["total_machines"] = r[0]["count"]
 
     # Active machines
-    r = execute_query("SELECT COUNT(*) AS count FROM machines WHERE status = 'Running'")
+    r = execute_query("SELECT COUNT(*) AS count FROM machines WHERE Status = 'Running'")
     stats["active_machines"] = r[0]["count"]
 
     # Total employees
-    r = execute_query("SELECT COUNT(*) AS count FROM employees")
+    r = execute_query("SELECT COUNT(*) AS count FROM operators")
     stats["total_employees"] = r[0]["count"]
 
-    # Unresolved faults
-    r = execute_query("SELECT COUNT(*) AS count FROM fault_logs WHERE resolved = 0")
+    # Unresolved faults (alerts where Status = 'Open')
+    r = execute_query("SELECT COUNT(*) AS count FROM alerts WHERE Status = 'Open'")
     stats["unresolved_faults"] = r[0]["count"]
 
     # Active alerts
-    r = execute_query("SELECT COUNT(*) AS count FROM alerts WHERE acknowledged = 0")
+    r = execute_query("SELECT COUNT(*) AS count FROM alerts WHERE Status = 'Open'")
     stats["active_alerts"] = r[0]["count"]
 
     # Total production
-    r = execute_query("SELECT COALESCE(SUM(bundles_produced), 0) AS total FROM production_logs")
+    r = execute_query("SELECT COALESCE(SUM(Bundles_Produced), 0) AS total FROM production")
     stats["total_bundles"] = r[0]["total"]
 
     # Avg efficiency
-    r = execute_query("SELECT ROUND(COALESCE(AVG(efficiency), 0), 2) AS avg_eff FROM production_logs")
+    r = execute_query("SELECT ROUND(COALESCE(AVG(Efficiency), 0), 2) AS avg_eff FROM production")
     stats["avg_efficiency"] = float(r[0]["avg_eff"])
 
     # Total sensor readings
-    r = execute_query("SELECT COUNT(*) AS count FROM sensor_readings")
+    r = execute_query("SELECT COUNT(*) AS count FROM sensors")
     stats["total_readings"] = r[0]["count"]
 
     return stats
