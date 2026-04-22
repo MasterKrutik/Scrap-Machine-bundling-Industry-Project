@@ -189,13 +189,18 @@ def get_dashboard_stats():
     r = execute_query("SELECT COUNT(*) AS count FROM alerts WHERE Status = 'Open'")
     stats["active_alerts"] = r[0]["count"]
 
-    # Total production
-    r = execute_query("SELECT COALESCE(SUM(Bundles_Produced), 0) AS total FROM production_logs")
-    stats["total_bundles"] = r[0]["total"]
+    # Total production (Total bundles)
+    r = execute_query("SELECT COUNT(*) AS total FROM bundles")
+    total_bundles = r[0]["total"] if r else 0
+    stats["total_bundles"] = total_bundles
 
-    # Avg efficiency
-    r = execute_query("SELECT ROUND(COALESCE(AVG(Efficiency), 0), 2) AS avg_eff FROM production_logs")
-    stats["avg_efficiency"] = float(r[0]["avg_eff"])
+    # Avg efficiency (Approved bundles / Total bundles)
+    if total_bundles > 0:
+        r_app = execute_query("SELECT COUNT(*) AS approved FROM bundles WHERE Quality_Status = 'Approved'")
+        approved_bundles = r_app[0]["approved"] if r_app else 0
+        stats["avg_efficiency"] = round((approved_bundles / total_bundles) * 100, 2)
+    else:
+        stats["avg_efficiency"] = 0.0
 
     # Total sensor readings
     r = execute_query("SELECT COUNT(*) AS count FROM sensors")
