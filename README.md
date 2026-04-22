@@ -37,8 +37,7 @@ ScrapMachine_Project/
 │   │   └── pages/              # Dashboard pages
 │   └── index.html
 ├── dataset/
-│   ├── generate_dataset.py     # Generate all CSV files
-│   └── *.csv                   # Generated datasets
+│   └── *.csv                   # Datasets
 └── README.md
 ```
 
