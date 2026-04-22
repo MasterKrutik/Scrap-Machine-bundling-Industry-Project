@@ -117,7 +117,7 @@ html += """
 
 # Send via Nodemailer service
 payload = {
-    "to": "yoyokingguys143@gmail.com",
+    "to": "yoyokingguys1143@gmail.com",
     "subject": "🏭 ScrapMachine IoT — Machine Assignments & Bay Locations Report",
     "body": html
 }
