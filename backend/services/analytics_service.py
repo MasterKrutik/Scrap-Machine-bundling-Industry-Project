@@ -190,11 +190,11 @@ def get_dashboard_stats():
     stats["active_alerts"] = r[0]["count"]
 
     # Total production
-    r = execute_query("SELECT COALESCE(SUM(Bundles_Produced), 0) AS total FROM production")
+    r = execute_query("SELECT COALESCE(SUM(Bundles_Produced), 0) AS total FROM production_logs")
     stats["total_bundles"] = r[0]["total"]
 
     # Avg efficiency
-    r = execute_query("SELECT ROUND(COALESCE(AVG(Efficiency), 0), 2) AS avg_eff FROM production")
+    r = execute_query("SELECT ROUND(COALESCE(AVG(Efficiency), 0), 2) AS avg_eff FROM production_logs")
     stats["avg_efficiency"] = float(r[0]["avg_eff"])
 
     # Total sensor readings
