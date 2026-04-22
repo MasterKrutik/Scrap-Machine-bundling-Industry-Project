@@ -50,7 +50,7 @@ def _send_alert_email(data, timestamp, claims):
             machine = machines[0] if machines else {}
 
             payload = {
-                "to": "yoyokingguys1143@gmail.com",
+                "to": "yoyokingguys143@gmail.com",
                 "machine_id": data["machine_id"],
                 "machine_name": machine.get("Machine_Name", f"Machine #{data['machine_id']}"),
                 "location": machine.get("Location", "Unknown"),

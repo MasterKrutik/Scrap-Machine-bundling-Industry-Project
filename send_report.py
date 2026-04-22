@@ -10,24 +10,24 @@ conn.row_factory = sqlite3.Row
 cursor = conn.cursor()
 
 # Get machines
-cursor.execute("SELECT machine_id, name, type, location, status, max_capacity_tons FROM machines ORDER BY machine_id")
+cursor.execute("SELECT Machine_ID as machine_id, Machine_Name as name, 'Unknown' as type, Location as location, Status as status, Capacity as max_capacity_tons FROM machines ORDER BY Machine_ID")
 machines = [dict(r) for r in cursor.fetchall()]
 
 # Get operators
-cursor.execute("SELECT employee_id, first_name, last_name, role, department, shift, phone FROM employees WHERE role = 'Operator' ORDER BY employee_id")
+cursor.execute("SELECT Operator_ID as employee_id, Name as first_name, '' as last_name, 'Operator' as role, '' as department, Shift as shift, Contact as phone FROM operators ORDER BY Operator_ID")
 operators = [dict(r) for r in cursor.fetchall()]
 
 # Get latest sensor stats per machine
 cursor.execute("""
-    SELECT m.machine_id, m.name,
-           ROUND(AVG(sr.temperature), 1) AS avg_temp,
-           ROUND(AVG(sr.vibration), 1) AS avg_vib,
-           ROUND(AVG(sr.pressure), 1) AS avg_press,
-           ROUND(AVG(sr.bundle_weight), 1) AS avg_weight,
-           SUM(sr.proximity) AS scrap_detections
-    FROM sensor_readings sr
-    JOIN machines m ON sr.machine_id = m.machine_id
-    GROUP BY m.machine_id
+    SELECT s.Machine_ID as machine_id,
+           ROUND(AVG(CASE WHEN s.Sensor_Type = 'Temperature' THEN sd.Value END), 1) AS avg_temp,
+           ROUND(AVG(CASE WHEN s.Sensor_Type = 'Vibration' THEN sd.Value END), 1) AS avg_vib,
+           ROUND(AVG(CASE WHEN s.Sensor_Type = 'Pressure' THEN sd.Value END), 1) AS avg_press,
+           ROUND(AVG(CASE WHEN s.Sensor_Type = 'Load Cell' THEN sd.Value END), 1) AS avg_weight,
+           SUM(CASE WHEN s.Sensor_Type = 'Proximity' THEN sd.Value ELSE 0 END) AS scrap_detections
+    FROM sensor_data sd
+    JOIN sensors s ON sd.Sensor_ID = s.Sensor_ID
+    GROUP BY s.Machine_ID
 """)
 sensor_stats = {r["machine_id"]: dict(r) for r in cursor.fetchall()}
 
@@ -117,7 +117,7 @@ html += """
 
 # Send via Nodemailer service
 payload = {
-    "to": "yoyokingguys1143@gmail.com",
+    "to": "yoyokingguys143@gmail.com",
     "subject": "🏭 ScrapMachine IoT — Machine Assignments & Bay Locations Report",
     "body": html
 }

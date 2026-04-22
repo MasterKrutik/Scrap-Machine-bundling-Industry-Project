@@ -53,7 +53,7 @@ def _send_maintenance_email(data, timestamp, claims):
             machine_name = machines[0]["Machine_Name"] if machines else f"Machine #{data['machine_id']}"
 
             payload = {
-                "to": "yoyokingguys1143@gmail.com",
+                "to": "yoyokingguys143@gmail.com",
                 "machine_id": data["machine_id"],
                 "machine_name": machine_name,
                 "type": data["type"],

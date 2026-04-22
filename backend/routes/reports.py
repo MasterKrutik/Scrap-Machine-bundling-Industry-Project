@@ -127,7 +127,7 @@ def send_assignment_report():
 
             # 3. Hand off to Node Email Microservice
             payload = {
-                "to": "yoyokingguys1143@gmail.com",
+                "to": "yoyokingguys143@gmail.com",
                 "subject": "🏭 ScrapMachine IoT — Generated Bay & Operator Report",
                 "body": html
             }
