@@ -70,12 +70,6 @@ export default function LoginPage() {
             {loading ? "Signing in..." : "Sign In"}
           </button>
         </form>
-
-        <div className="login-hint">
-          <strong>Demo Credentials:</strong><br />
-          Admin: <code>admin</code> / <code>admin123</code><br />
-          User: <code>suresh.singh</code> / <code>user123</code>
-        </div>
       </div>
     </div>
   );

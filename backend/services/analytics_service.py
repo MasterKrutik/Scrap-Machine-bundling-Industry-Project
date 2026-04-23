@@ -196,8 +196,15 @@ def get_dashboard_stats():
     # Avg efficiency (fixed to match production logs)
     stats["avg_efficiency"] = 85.0
 
-    # Total sensor readings
-    r = execute_query("SELECT COUNT(*) AS count FROM sensors")
+    # Total sensor readings (count grouped readings to match Sensor Data section)
+    r = execute_query("""
+        SELECT COUNT(*) AS count FROM (
+            SELECT s.Machine_ID, sd.Timestamp
+            FROM sensor_data sd
+            JOIN sensors s ON sd.Sensor_ID = s.Sensor_ID
+            GROUP BY s.Machine_ID, sd.Timestamp
+        )
+    """)
     stats["total_readings"] = r[0]["count"]
 
     return stats
