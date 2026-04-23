@@ -438,6 +438,21 @@ export default function AdminDashboard({ activeTab, alertCount, setAlertCount })
 
           <div className="content-grid" style={{ marginTop: "var(--space-lg)" }}>
             <div className="card">
+              <div className="card-header"><h3 className="card-title">🤖 Prediction Model: Decision Boundary</h3></div>
+              <div style={{ padding: "10px", textAlign: "center" }}>
+                <img src="/decision_boundary.png" alt="Decision Boundary: Vibration vs Motor Current" style={{ maxWidth: "100%", height: "auto", borderRadius: "8px", border: "1px solid #e2e8f0" }} />
+              </div>
+            </div>
+            <div className="card">
+              <div className="card-header"><h3 className="card-title">🤖 Prediction Model: Feature Importance</h3></div>
+              <div style={{ padding: "10px", textAlign: "center" }}>
+                <img src="/feature_weights.png" alt="Logistic Regression Weights" style={{ maxWidth: "100%", height: "auto", borderRadius: "8px", border: "1px solid #e2e8f0" }} />
+              </div>
+            </div>
+          </div>
+
+          <div className="content-grid" style={{ marginTop: "var(--space-lg)" }}>
+            <div className="card">
               <div className="card-header"><h3 className="card-title">MTBF Details</h3></div>
               <DataTable columns={[
                 { key: "name", label: "Machine" },

@@ -90,24 +90,23 @@ def predict_failure():
 
     # Get average sensor readings per machine
     sensor_query = """
-        SELECT
-            sr.machine_id,
-            AVG(sr.temperature) AS avg_temp,
-            AVG(sr.vibration) AS avg_vib,
-            AVG(sr.pressure) AS avg_pressure,
-            AVG(sr.motor_current) AS avg_current,
-            AVG(sr.oil_level) AS avg_oil
-        FROM sensor_readings sr
-        GROUP BY sr.machine_id
+        SELECT s.Machine_ID as machine_id,
+               ROUND(AVG(CASE WHEN s.Sensor_Type = 'Temperature' THEN sd.Value END), 1) AS avg_temp,
+               ROUND(AVG(CASE WHEN s.Sensor_Type = 'Vibration' THEN sd.Value END), 1) AS avg_vib,
+               ROUND(AVG(CASE WHEN s.Sensor_Type = 'Pressure' THEN sd.Value END), 1) AS avg_pressure,
+               ROUND(AVG(CASE WHEN s.Sensor_Type = 'Motor Current' THEN sd.Value END), 1) AS avg_current,
+               ROUND(AVG(CASE WHEN s.Sensor_Type = 'Oil Level' THEN sd.Value END), 1) AS avg_oil
+        FROM sensor_data sd
+        JOIN sensors s ON sd.Sensor_ID = s.Sensor_ID
+        GROUP BY s.Machine_ID
     """
     sensor_data = execute_query(sensor_query)
 
     # Get fault labels
     fault_query = """
-        SELECT machine_id, COUNT(*) AS high_faults
-        FROM fault_logs
-        WHERE severity = 'High'
-        GROUP BY machine_id
+        SELECT Machine_ID as machine_id, COUNT(*) AS high_faults
+        FROM alerts
+        GROUP BY Machine_ID
     """
     fault_data = execute_query(fault_query)
     fault_map = {f["machine_id"]: f["high_faults"] for f in fault_data}
@@ -120,11 +119,11 @@ def predict_failure():
     machine_ids = []
     for s in sensor_data:
         features = [
-            float(s["avg_temp"]),
-            float(s["avg_vib"]),
-            float(s["avg_pressure"]),
-            float(s["avg_current"]),
-            float(s["avg_oil"])
+            float(s["avg_temp"] or 0),
+            float(s["avg_vib"] or 0),
+            float(s["avg_pressure"] or 0),
+            float(s["avg_current"] or 0),
+            float(s["avg_oil"] or 0)
         ]
         X.append(features)
         label = 1 if fault_map.get(s["machine_id"], 0) > 2 else 0
