@@ -58,7 +58,7 @@ def generate_dashboard_graphs():
     model.fit(X_scaled, y)
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
-    public_dir = os.path.abspath(os.path.join(base_dir, '..', 'frontend', 'public'))
+    public_dir = os.path.abspath(os.path.join(base_dir, '..', '..', 'frontend', 'public'))
     os.makedirs(public_dir, exist_ok=True)
 
     # List of our features to loop through

@@ -399,22 +399,7 @@ export default function AdminDashboard({ activeTab, alertCount, setAlertCount })
           </div>
 
           <div className="content-grid">
-            <div className="card">
-              <div className="card-header"><h3 className="card-title">MTBF (Mean Time Between Failures)</h3></div>
-              <AreaChartComponent data={mtbf.map(m => ({ name: m.name, value: m.mtbf || 0 }))} dataKey="value" name="MTBF (hrs)" color="#10b981" />
-            </div>
-            <div className="card">
-              <div className="card-header"><h3 className="card-title">MTTR (Mean Time To Repair)</h3></div>
-              <AreaChartComponent data={mttr.map(m => ({ name: m.name, value: m.mttr || 0 }))} dataKey="value" name="MTTR (hrs)" color="#f59e0b" />
-            </div>
-          </div>
-
-          <div className="content-grid" style={{ marginTop: "var(--space-lg)" }}>
-            <div className="card">
-              <div className="card-header"><h3 className="card-title">Downtime per Machine</h3></div>
-              <AreaChartComponent data={downtime.map(d => ({ name: d.name, value: d.downtime_hours || 0 }))} dataKey="value" name="Downtime (hrs)" color="#ef4444" />
-            </div>
-            <div className="card">
+            <div className="card" style={{ gridColumn: "1 / -1" }}>
               <div className="card-header"><h3 className="card-title">🤖 Failure Prediction (Logistic Regression)</h3></div>
               {prediction?.predictions ? (
                 <>
@@ -451,26 +436,6 @@ export default function AdminDashboard({ activeTab, alertCount, setAlertCount })
             </div>
           </div>
 
-          <div className="content-grid" style={{ marginTop: "var(--space-lg)" }}>
-            <div className="card">
-              <div className="card-header"><h3 className="card-title">MTBF Details</h3></div>
-              <DataTable columns={[
-                { key: "name", label: "Machine" },
-                { key: "total_hours", label: "Total Hours" },
-                { key: "total_faults", label: "Faults" },
-                { key: "mtbf", label: "MTBF (hrs)" },
-              ]} data={mtbf} />
-            </div>
-            <div className="card">
-              <div className="card-header"><h3 className="card-title">MTTR Details</h3></div>
-              <DataTable columns={[
-                { key: "name", label: "Machine" },
-                { key: "total_repairs", label: "Repairs" },
-                { key: "total_repair_hours", label: "Total Hours" },
-                { key: "mttr", label: "MTTR (hrs)" },
-              ]} data={mttr} />
-            </div>
-          </div>
         </>
       )}
 

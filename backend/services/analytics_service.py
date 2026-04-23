@@ -146,11 +146,11 @@ def predict_failure():
 
     results = []
     for i, mid in enumerate(machine_ids):
-        machine_name_query = "SELECT name FROM machines WHERE machine_id = %s"
+        machine_name_query = "SELECT Machine_Name FROM machines WHERE Machine_ID = ?"
         machine = execute_query(machine_name_query, (mid,))
         results.append({
             "machine_id": mid,
-            "machine_name": machine[0]["name"] if machine else f"Machine-{mid}",
+            "machine_name": machine[0]["Machine_Name"] if machine else f"Machine-{mid}",
             "failure_probability": round(float(probabilities[i][1]) * 100, 2),
             "risk_level": "High" if probabilities[i][1] > 0.6 else ("Medium" if probabilities[i][1] > 0.3 else "Low")
         })
