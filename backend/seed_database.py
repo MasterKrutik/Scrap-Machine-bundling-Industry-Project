@@ -8,10 +8,10 @@ import os
 import mysql.connector
 
 DB_CONFIG = {
-    "host": "localhost",
+    "host": "127.0.0.1",
     "user": "root",
-    "password": "password",
-    "database": "scrap_machine_db"
+    "password": "amit2059",
+    "database": "ScrapBundle"
 }
 
 DATASET_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "dataset")

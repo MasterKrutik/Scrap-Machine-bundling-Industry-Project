@@ -1,23 +1,35 @@
 """
 Database connection helper.
-Supports MySQL (production) and SQLite (fallback for demo).
-Set USE_SQLITE = True to run without MySQL installed.
+Supports MySQL (default) and SQLite (fallback for demo/dev).
+Configure via environment variables.
 """
 
-import sqlite3
 import os
+import sqlite3
+from config_env import load_project_env
 
-# Toggle: set to False if MySQL is available
-USE_SQLITE = True
+
+load_project_env()
+
+
+def _as_bool(value, default=False):
+    if value is None:
+        return default
+    return str(value).strip().lower() in {"1", "true", "yes", "on"}
+
+
+# Toggle with env var when needed for local demo/dev.
+USE_SQLITE = _as_bool(os.getenv("USE_SQLITE"), default=False)
 
 DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "scrap_machine.db")
 
 # MySQL config (used when USE_SQLITE = False)
 MYSQL_CONFIG = {
-    "host": "localhost",
-    "user": "root",
-    "password": "password",
-    "database": "scrap_machine_db"
+    "host": os.getenv("DB_HOST", "127.0.0.1"),
+    "port": int(os.getenv("DB_PORT", "3306")),
+    "user": os.getenv("DB_USER", "root"),
+    "password": os.getenv("DB_PASSWORD", "password"),
+    "database": os.getenv("DB_NAME", "scrap_machine_db"),
 }
 
 
@@ -31,6 +43,21 @@ def get_db():
     else:
         import mysql.connector
         return mysql.connector.connect(**MYSQL_CONFIG)
+
+
+def test_mysql_connection():
+    """Return (ok, message) for current MySQL configuration."""
+    try:
+        conn = get_db()
+        cursor = conn.cursor()
+        cursor.execute("SELECT DATABASE()")
+        db_name = cursor.fetchone()
+        cursor.close()
+        conn.close()
+        active_db = db_name[0] if db_name else MYSQL_CONFIG["database"]
+        return True, f"MySQL connected successfully (database: {active_db})"
+    except Exception as exc:
+        return False, f"MySQL connection failed: {exc}"
 
 
 def execute_query(query, params=None, fetch=True):
@@ -55,6 +82,9 @@ def execute_query(query, params=None, fetch=True):
             cursor.close()
             conn.close()
     else:
+        # Convert SQLite-style ? placeholders to %s for MySQL
+        if params and "?" in query:
+            query = query.replace("?", "%s")
         cursor = conn.cursor(dictionary=True)
         try:
             cursor.execute(query, params or ())

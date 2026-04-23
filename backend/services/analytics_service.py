@@ -173,19 +173,19 @@ def get_dashboard_stats():
     stats["total_machines"] = r[0]["count"]
 
     # Active machines
-    r = execute_query("SELECT COUNT(*) AS count FROM machines WHERE Status = 'Running'")
+    r = execute_query("SELECT COUNT(*) AS count FROM machines WHERE Status = 'Active'")
     stats["active_machines"] = r[0]["count"]
 
     # Total employees
     r = execute_query("SELECT COUNT(*) AS count FROM operators")
     stats["total_employees"] = r[0]["count"]
 
-    # Unresolved faults (alerts where Status = 'Open')
-    r = execute_query("SELECT COUNT(*) AS count FROM alerts WHERE Status = 'Open'")
+    # Unresolved faults (alerts where Status != 'Resolved')
+    r = execute_query("SELECT COUNT(*) AS count FROM alerts WHERE Status != 'Resolved'")
     stats["unresolved_faults"] = r[0]["count"]
 
     # Active alerts
-    r = execute_query("SELECT COUNT(*) AS count FROM alerts WHERE Status = 'Open'")
+    r = execute_query("SELECT COUNT(*) AS count FROM alerts WHERE Status != 'Resolved'")
     stats["active_alerts"] = r[0]["count"]
 
     # Total production (Total bundles)

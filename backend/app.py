@@ -56,10 +56,10 @@ if __name__ == "__main__":
     from models.database import USE_SQLITE, DB_PATH, init_sqlite_db, seed_sqlite_db
     import os
     if USE_SQLITE and not os.path.exists(DB_PATH):
-        print("📦 First run — initializing SQLite database...")
+        print("First run - initializing SQLite database...")
         init_sqlite_db()
         seed_sqlite_db()
 
     app = create_app()
-    print("🚀 ScrapMachine IoT API starting on http://localhost:5000")
+    print("ScrapMachine IoT API starting on http://localhost:5000")
     app.run(debug=True, host="0.0.0.0", port=5000)

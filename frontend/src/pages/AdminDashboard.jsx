@@ -240,26 +240,6 @@ export default function AdminDashboard({ activeTab, alertCount, setAlertCount })
           <div className="page-header">
             <div><h1>Sensor Data</h1><p className="page-subtitle">Real-time machine telemetry</p></div>
           </div>
-          <div className="content-grid">
-            <div className="card">
-              <div className="card-header"><h3 className="card-title">🌡️ Avg Temperature by Machine</h3></div>
-              <AreaChartComponent data={sensorStats.map(s => ({ name: s.machine_name, value: s.avg_temperature }))} dataKey="value" name="Temp (°C)" color="#ef4444" />
-            </div>
-            <div className="card">
-              <div className="card-header"><h3 className="card-title">📳 Avg Vibration by Machine</h3></div>
-              <AreaChartComponent data={sensorStats.map(s => ({ name: s.machine_name, value: s.avg_vibration }))} dataKey="value" name="Vibration" color="#f59e0b" />
-            </div>
-          </div>
-          <div className="content-grid" style={{ marginTop: "var(--space-lg)" }}>
-            <div className="card">
-              <div className="card-header"><h3 className="card-title">⚖️ Avg Bundle Weight by Machine (Load Cell HX711)</h3></div>
-              <AreaChartComponent data={sensorStats.map(s => ({ name: s.machine_name, value: s.avg_bundle_weight }))} dataKey="value" name="Weight (kg)" color="#8b5cf6" />
-            </div>
-            <div className="card">
-              <div className="card-header"><h3 className="card-title">📡 Scrap Detections by Machine (Proximity Sensor)</h3></div>
-              <SensorBarChart data={sensorStats.map(s => ({ name: s.machine_name, value: s.scrap_detections }))} dataKey="value" name="Detections" color="#06b6d4" />
-            </div>
-          </div>
           <div className="card" style={{ marginTop: "var(--space-lg)" }}>
             <div className="card-header"><h3 className="card-title">Recent Readings</h3></div>
             <DataTable
