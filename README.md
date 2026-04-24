@@ -1,17 +1,18 @@
 # 🏭 Data Driven Digital Transformation of IoT Enabled Scrap Bundle Making Machine
 
-A full-stack IoT monitoring system for scrap bundle making machines with real-time sensor data, MQTT communication, predictive analytics, and role-based dashboards.
+A full-stack IoT monitoring system for scrap bundle making machines featuring real-time sensor telemetry, predictive analytics, and a modern **Neo-Brutalist** role-based dashboard.
 
 ## 📋 Tech Stack
 
 | Layer | Technology |
 |-------|-----------|
 | Frontend | React + Vite |
-| Styling | Vanilla CSS (Dark Industrial Theme) |
+| Styling | Vanilla CSS (Neo-Brutalist Design: High contrast, Space Grotesk/DM Sans) |
 | Backend | Flask REST API |
-| Database | MySQL |
-| IoT Protocol | MQTT (Mosquitto + paho-mqtt) |
-| Analytics | scikit-learn (Logistic Regression) |
+| Database | SQLite (Primary, 10-Table Normalized Schema) / MySQL (Fallback) |
+| IoT Sensors | Load Cell (HX711) for weight, Proximity Sensors, Temperature, Vibration, etc. |
+| Protocol | MQTT (Mosquitto + paho-mqtt) |
+| Analytics | scikit-learn (Logistic Regression, Decision Boundaries, Feature Importance) |
 | Auth | JWT (JSON Web Tokens) |
 
 ## 📁 Project Structure
@@ -21,23 +22,21 @@ ScrapMachine_Project/
 ├── backend/
 │   ├── app.py                  # Flask application entry point
 │   ├── requirements.txt        # Python dependencies
-│   ├── schema.sql              # Database schema (3NF)
-│   ├── queries.sql             # SQL queries (joins, views, etc.)
-│   ├── seed_database.py        # Seed DB from CSV files
-│   ├── mqtt_publisher.py       # MQTT sensor data publisher
-│   ├── mqtt_subscriber.py      # MQTT subscriber → MySQL
+│   ├── models/                 # Database connection & SQLite init (database.py)
 │   ├── routes/                 # API route blueprints
-│   ├── models/                 # Database connection
-│   └── services/               # Analytics service
+│   ├── services/               # Analytics service (ML predictions & plots)
+│   ├── mqtt_publisher.py       # MQTT sensor data publisher (Load cell, proximity, etc.)
+│   ├── mqtt_subscriber.py      # MQTT subscriber → SQLite/MySQL
+│   └── scrap_machine.db        # Auto-generated SQLite Database
 ├── frontend/
 │   ├── src/
 │   │   ├── api/                # API client
-│   │   ├── components/         # Reusable UI components
+│   │   ├── components/         # Neo-Brutalist UI components
 │   │   ├── context/            # Auth context
-│   │   └── pages/              # Dashboard pages
+│   │   └── pages/              # Dashboard pages & charts
 │   └── index.html
 ├── dataset/
-│   └── *.csv                   # Datasets
+│   └── *.csv                   # Datasets (Machine, Operator, Sensor, etc.)
 └── README.md
 ```
 
@@ -46,59 +45,26 @@ ScrapMachine_Project/
 ### Prerequisites
 - Python 3.9+
 - Node.js 18+
-- MySQL 8.0+
-- Mosquitto MQTT Broker (for MQTT demo)
+- Mosquitto MQTT Broker (for local MQTT testing)
 
 ---
 
-### Step 1: Generate Dataset
+### Step 1: Initialize Database (SQLite by default)
 
-```bash
-cd dataset
-python generate_dataset.py
-```
-
-This creates 8 CSV files:
-- `machines.csv` (8 records)
-- `employees.csv` (15 records)
-- `users.csv` (10 records)
-- `sensor_readings.csv` (17,000+ records)
-- `production_logs.csv` (500+ records)
-- `fault_logs.csv` (60 records)
-- `maintenance_logs.csv` (45 records)
-- `alerts.csv` (auto-generated from high-severity faults)
-
----
-
-### Step 2: MySQL Setup
-
-1. Start MySQL server
-2. Run the schema:
-
-```bash
-mysql -u root -p < backend/schema.sql
-```
-
-Or in MySQL client:
-```sql
-source backend/schema.sql;
-```
-
-> **Note**: Update credentials in `backend/models/database.py` and `backend/seed_database.py` if not using `root`/`password`.
-
----
-
-### Step 3: Seed Database
+The project uses a lightweight SQLite database out-of-the-box via the `.env` file (`USE_SQLITE=true`).
 
 ```bash
 cd backend
 pip install -r requirements.txt
-python seed_database.py
+python models/database.py
 ```
+*(This initializes and seeds `scrap_machine.db` from the CSV datasets in the `dataset/` directory.)*
+
+> **Note on MySQL**: If you prefer MySQL, set `USE_SQLITE=false` in `backend/.env`, import `schema.sql`, and run `python seed_database.py`.
 
 ---
 
-### Step 4: Run MQTT Broker (Optional - for CNDC demo)
+### Step 2: Run MQTT Broker (Optional - for IoT telemetry)
 
 #### Install Mosquitto
 - **Windows**: Download from https://mosquitto.org/download/
@@ -110,24 +76,22 @@ python seed_database.py
 mosquitto -v
 ```
 
-#### Terminal 1 - Start Subscriber:
+#### Start Telemetry Simulation:
+Terminal 1 - Start Subscriber (listens to Mosquitto and saves to DB):
 ```bash
 cd backend
 python mqtt_subscriber.py
 ```
 
-#### Terminal 2 - Start Publisher:
+Terminal 2 - Start Publisher (publishes Load cell/Proximity and other sensor data):
 ```bash
 cd backend
 python mqtt_publisher.py
 ```
 
-The publisher reads sensor_readings.csv and publishes via MQTT.
-The subscriber consumes messages and inserts into MySQL.
-
 ---
 
-### Step 5: Run Flask Backend
+### Step 3: Run Flask Backend
 
 ```bash
 cd backend
@@ -135,12 +99,11 @@ python app.py
 ```
 
 API runs at: **http://localhost:5000**
-
 Health check: `GET http://localhost:5000/api/health`
 
 ---
 
-### Step 6: Run React Frontend
+### Step 4: Run React Frontend
 
 ```bash
 cd frontend
@@ -156,82 +119,59 @@ Frontend runs at: **http://localhost:5173**
 
 | Role | Username | Password |
 |------|----------|----------|
-| Admin | `admin` | `admin123` |
-| User | `suresh.singh` | `user123` |
+| Admin | `admin` | `password` |
+
+*(Check `dataset/users.csv` or the `users` table for other role accounts)*
 
 ---
 
 ## 📊 Features
 
+### Neo-Brutalist UI Overhaul
+- **Aesthetic**: High-contrast vibrant colors (Yellow `#ffe17c`, Charcoal `#171e19`, Sage `#b7c6c2`).
+- **Styling**: Distinct 2px solid black borders, hard drop shadows, and engaging micro-interactions (physical press button effects).
+- **Typography**: Clean, geometric UI utilizing Space Grotesk and DM Sans.
+
 ### Admin Dashboard
-- System overview with KPI stats
-- Machine CRUD management
-- Employee CRUD management
-- Sensor data visualization
-- Production log tracking
-- Fault log management & resolution
-- Maintenance records
-- **In-app alert notification center**
-- Analytics: MTBF, MTTR, Downtime, ML Failure Prediction
+- System overview with live KPI stats (bundles produced, scrap received, alerts).
+- **Predictive Analytics**: Integrated visual assets showing Decision Boundary graphs and Feature Importance charts for machine failure modeling.
+- Real-time Load Cell (HX711) weight monitoring and Proximity Scrap Detection status.
+- Machine & Operator CRUD management.
+- Fault log management & resolution tracking.
 
 ### User Dashboard
-- View sensor readings & charts
-- View production logs
-- **Report faults** (High severity auto-triggers alerts)
-- **Log maintenance activities**
-- View & acknowledge alert messages
+- View live sensor readings & dynamic charts.
+- Track production logs.
+- Report faults & view maintenance activities.
 
 ---
 
-## 🗄️ Database Design (3NF)
+## 🗄️ Database Design (Normalized 3NF)
 
-### Normalization
-- **1NF**: Atomic values, no repeating groups
-- **2NF**: No partial dependencies (single-column PKs)
-- **3NF**: No transitive dependencies (employee info in `employees`, not duplicated)
-
-### Trigger
-When a fault with `severity = 'High'` is inserted, a trigger automatically creates an alert in the `alerts` table.
+The system utilizes a comprehensive 10-table normalized schema encompassing:
+1. `machines`
+2. `operators`
+3. `users`
+4. `sensors`
+5. `sensor_data`
+6. `production_logs`
+7. `maintenance_logs`
+8. `alerts`
+9. `scrap_materials`
+10. `bundles`
 
 ---
 
-## 🌐 CNDC - Network Architecture
+## 🌐 IoT Architecture
 
-### Data Flow
 ```
-Sensor → mqtt_publisher.py → Mosquitto Broker → mqtt_subscriber.py → MySQL → Flask API → React Dashboard
+Sensors (Load Cell, Proximity, Temp) → mqtt_publisher.py → Mosquitto Broker → mqtt_subscriber.py → SQLite/MySQL → Flask API → React Dashboard
 ```
 
-### Protocol Comparison
-
-| Protocol | Use Case | Selected |
-|----------|----------|----------|
-| MQTT | Sensor telemetry (lightweight pub/sub) | ✅ |
-| HTTP | REST API (request-response) | ✅ |
-| UDP | Real-time streams (no guarantee) | ❌ |
-| Modbus | Industrial SCADA (complex) | ❌ |
-
 ---
 
-## 📈 Analytics
+## 📈 Analytics & Machine Learning
 
-- **MTBF** = Total Operating Hours / Number of Failures
-- **MTTR** = Total Repair Hours / Number of Repairs
-- **Downtime** = Sum of maintenance duration per machine
-- **Failure Prediction** = Logistic Regression on sensor features (temperature, vibration, pressure, motor current, oil level)
-
----
-
-## 🛠️ API Endpoints
-
-| Endpoint | Method | Auth | Description |
-|----------|--------|------|-------------|
-| `/api/auth/login` | POST | ❌ | JWT Login |
-| `/api/machines` | GET/POST | ✅ | Machine CRUD |
-| `/api/employees` | GET/POST | ✅ | Employee CRUD |
-| `/api/sensors` | GET | ✅ | Sensor readings |
-| `/api/production` | GET/POST | ✅ | Production logs |
-| `/api/faults` | GET/POST | ✅ | Fault reports |
-| `/api/maintenance` | GET/POST | ✅ | Maintenance logs |
-| `/api/alerts` | GET | ✅ | Alert messages |
-| `/api/analytics/*` | GET | ✅ | MTBF/MTTR/Predict |
+- **Downtime / MTBF / MTTR**: Calculated via `analytics_service.py` based on `maintenance_logs` and `production_logs`.
+- **Failure Prediction**: Scikit-Learn Logistic Regression evaluates live sensor features.
+- **Visualizations**: Auto-generated Decision Boundary and Feature Importance graphs saved to `frontend/public/assets/` to help interpret model predictions natively within the dashboard.
